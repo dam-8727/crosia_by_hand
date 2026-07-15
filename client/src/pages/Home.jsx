@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
   const { user } = useAuth();
+  const location = useLocation();
+  const justRegistered = Boolean(location.state?.justRegistered);
 
   return (
     <section className="hero">
@@ -17,7 +19,8 @@ export default function Home() {
       <div className="hero-actions">
         {user ? (
           <p className="welcome-banner">
-            Welcome back, <strong>{user.name}</strong>. Catalog arrives next.
+            {justRegistered ? 'Welcome' : 'Welcome back'}, <strong>{user.name}</strong>.
+            Catalog arrives next.
           </p>
         ) : (
           <>

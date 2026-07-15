@@ -17,7 +17,7 @@ export default function Register() {
     setBusy(true);
     try {
       await register(name, email, password);
-      navigate('/');
+      navigate('/', { state: { justRegistered: true } });
     } catch (err) {
       setError(err.message);
     } finally {
