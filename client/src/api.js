@@ -61,4 +61,13 @@ export const api = {
     request(`/api/cart/${productId}`, { method: 'PUT', body: JSON.stringify({ qty }) }),
   removeCartItem: (productId) =>
     request(`/api/cart/${productId}`, { method: 'DELETE' }),
+
+  // orders + payment
+  getPaymentConfig: () => request('/api/orders/config'),
+  createOrder: (shipping) =>
+    request('/api/orders/create', { method: 'POST', body: JSON.stringify({ shipping }) }),
+  verifyPayment: (body) =>
+    request('/api/orders/verify', { method: 'POST', body: JSON.stringify(body) }),
+  getOrders: () => request('/api/orders'),
+  getOrder: (id) => request(`/api/orders/${id}`),
 };

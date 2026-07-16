@@ -6,6 +6,9 @@ import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
+import Orders from './pages/Orders';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -38,6 +41,30 @@ export default function App() {
                 element={
                   <PrivateRoute>
                     <Cart />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <PrivateRoute>
+                    <Checkout />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/order-success/:id"
+                element={
+                  <PrivateRoute>
+                    <OrderSuccess />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <PrivateRoute>
+                    <Orders />
                   </PrivateRoute>
                 }
               />

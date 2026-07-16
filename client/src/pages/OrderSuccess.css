@@ -1,0 +1,66 @@
+.order-success {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.success-badge {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--color-success, #4a7c59);
+  color: #fff;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.order-success h1 {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin: 0 0 0.5rem;
+}
+
+.success-sub {
+  color: var(--color-text-muted);
+  margin: 0 0 1.75rem;
+}
+
+.success-card {
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  margin-bottom: 1.75rem;
+}
+
+.success-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.success-row:not(:last-child) {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.success-row span:first-child {
+  color: var(--color-text-muted);
+}
+
+.success-row span:last-child {
+  text-align: right;
+  font-weight: 600;
+}
+
+.success-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
