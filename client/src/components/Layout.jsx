@@ -1,8 +1,11 @@
 import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import './Layout.css';
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { cart } = useCart();
 
   return (
     <>
@@ -16,9 +19,13 @@ export default function Layout() {
         </Link>
         <nav className="nav-links">
           <Link to="/">Home</Link>
+          <Link to="/shop">Shop</Link>
           {user ? (
             <>
-              <span>Hi, {user.name.split(' ')[0]}</span>
+              <Link to="/cart" className="cart-link">
+                Cart{cart.count > 0 && <span className="cart-badge">{cart.count}</span>}
+              </Link>
+              <span className="nav-hi">Hi, {user.name.split(' ')[0]}</span>
               <button type="button" className="linkish" onClick={logout}>
                 Log out
               </button>

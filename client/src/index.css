@@ -29,7 +29,14 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--color-bg);
+  background-color: #ece0cd;
+  background-image: radial-gradient(
+    1200px 480px at 50% -12%,
+    rgba(196, 165, 116, 0.14),
+    transparent 65%
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 a {
