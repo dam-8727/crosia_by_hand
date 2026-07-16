@@ -29,3 +29,22 @@
   font-size: 0.95rem;
   color: var(--color-text-muted);
 }
+
+.reset-demo-box {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 1px dashed var(--color-accent);
+  border-radius: 6px;
+  background: var(--color-bg);
+  text-align: center;
+}
+
+.reset-demo-note {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.reset-demo-link {
+  font-weight: 600;
+}

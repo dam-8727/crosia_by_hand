@@ -37,6 +37,10 @@ export const api = {
     request('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
   me: (token) =>
     request('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } }),
+  forgotPassword: (email) =>
+    request('/api/auth/forgot', { method: 'POST', body: JSON.stringify({ email }) }),
+  resetPassword: (body) =>
+    request('/api/auth/reset', { method: 'POST', body: JSON.stringify(body) }),
   health: () => request('/api/health'),
 
   // products
