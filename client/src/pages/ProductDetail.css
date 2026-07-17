@@ -43,6 +43,30 @@
   margin: 0 0 1rem;
 }
 
+.stock-status {
+  display: inline-block;
+  margin: 0 0 1.25rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.stock-status.in {
+  background: #e4f0e8;
+  color: #2f6b45;
+}
+
+.stock-status.low {
+  background: #fbe6de;
+  color: #c0562f;
+}
+
+.stock-status.out {
+  background: #ececec;
+  color: #6b6b6b;
+}
+
 .detail-desc {
   color: var(--color-text-muted);
   line-height: 1.6;

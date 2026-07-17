@@ -55,6 +55,9 @@ export default function ProductDetail() {
   if (error) return <p className="form-error">{error}</p>;
   if (!product) return null;
 
+  const outOfStock = product.stock <= 0;
+  const lowStock = product.stock > 0 && product.stock <= 3;
+
   return (
     <section className="product-detail">
       <div className="detail-media">
@@ -65,11 +68,19 @@ export default function ProductDetail() {
         <span className="product-cat">{product.category}</span>
         <h1>{product.name}</h1>
         <p className="detail-price">₹{product.price}</p>
+
+        {outOfStock ? (
+          <p className="stock-status out">Out of stock</p>
+        ) : lowStock ? (
+          <p className="stock-status low">Hurry up! Only {product.stock} left</p>
+        ) : (
+          <p className="stock-status in">In stock</p>
+        )}
+
         <p className="detail-desc">{product.description}</p>
         <ul className="detail-meta">
           {product.color && <li><strong>Color:</strong> {product.color}</li>}
           <li><strong>Material:</strong> {product.material}</li>
-          <li><strong>In stock:</strong> {product.stock}</li>
         </ul>
         <div className="qty-row">
           <label htmlFor="qty">Qty</label>
@@ -79,10 +90,13 @@ export default function ProductDetail() {
             min="1"
             max={product.stock}
             value={qty}
-            onChange={(e) => setQty(Math.max(1, parseInt(e.target.value, 10) || 1))}
+            disabled={outOfStock}
+            onChange={(e) =>
+              setQty(Math.min(product.stock, Math.max(1, parseInt(e.target.value, 10) || 1)))
+            }
           />
-          <button className="btn btn-primary" onClick={onAdd} disabled={busy}>
-            {busy ? 'Adding…' : 'Add to cart'}
+          <button className="btn btn-primary" onClick={onAdd} disabled={busy || outOfStock}>
+            {outOfStock ? 'Out of stock' : busy ? 'Adding…' : 'Add to cart'}
           </button>
         </div>
         {added && (

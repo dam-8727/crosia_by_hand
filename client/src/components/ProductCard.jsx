@@ -10,6 +10,9 @@ export default function ProductCard({ product }) {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
 
+  const outOfStock = product.stock <= 0;
+  const lowStock = product.stock > 0 && product.stock <= 3;
+
   async function onAdd() {
     if (!user) {
       navigate('/login');
@@ -27,6 +30,11 @@ export default function ProductCard({ product }) {
     <div className="product-card">
       <Link to={`/product/${product.slug}`} className="product-media">
         <img src={product.imageUrl} alt={product.name} loading="lazy" />
+        {outOfStock ? (
+          <span className="stock-badge out">Out of stock</span>
+        ) : lowStock ? (
+          <span className="stock-badge low">Only {product.stock} left</span>
+        ) : null}
       </Link>
       <div className="product-body">
         <span className="product-cat">{product.category}</span>
@@ -35,8 +43,12 @@ export default function ProductCard({ product }) {
         </Link>
         <div className="product-row">
           <span className="product-price">₹{product.price}</span>
-          <button className="btn btn-primary btn-sm" onClick={onAdd} disabled={busy}>
-            {busy ? 'Adding…' : 'Add'}
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={onAdd}
+            disabled={busy || outOfStock}
+          >
+            {outOfStock ? 'Sold out' : busy ? 'Adding…' : 'Add'}
           </button>
         </div>
       </div>
