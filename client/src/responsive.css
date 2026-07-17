@@ -1,0 +1,98 @@
+/* ============================================================
+   Mobile optimisation — all responsive/mobile-only rules live here.
+   Desktop styles stay in each component's own CSS file.
+   ============================================================ */
+
+/* Hamburger button — hidden on desktop, shown on mobile */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.nav-toggle-bar {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--color-text);
+  border-radius: 2px;
+}
+
+/* ---------- Tablets and below ---------- */
+@media (max-width: 720px) {
+  .site-header {
+    flex-wrap: wrap;
+    padding: 0.65rem 1rem;
+  }
+
+  .nav-toggle {
+    display: flex;
+  }
+
+  /* Collapse nav into a dropdown panel toggled by the hamburger */
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 0.9rem;
+    padding: 0.75rem 0 0.25rem;
+  }
+
+  .nav-links.nav-open {
+    display: flex;
+  }
+
+  .brand img {
+    height: 44px;
+  }
+
+  .brand-name {
+    font-size: 1.15rem;
+  }
+
+  .site-main {
+    padding: 1.5rem 1rem 3rem;
+  }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 480px) {
+  .shop-head h1 {
+    font-size: 1.85rem;
+  }
+
+  /* Two product columns feel better than one on phones */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .product-name {
+    font-size: 0.98rem;
+  }
+
+  .product-body {
+    padding: 0.65rem 0.7rem 0.85rem;
+  }
+
+  .detail-info h1 {
+    font-size: 1.6rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-num {
+    font-size: 1.4rem;
+  }
+}

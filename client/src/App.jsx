@@ -16,6 +16,7 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import './App.css';
+import './responsive.css';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
