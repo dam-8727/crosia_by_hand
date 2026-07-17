@@ -5,6 +5,7 @@ const Razorpay = require('razorpay');
 const Cart = require('../models/Cart');
 const Order = require('../models/Order');
 const { protect, adminOnly } = require('../middleware/auth');
+const { sendOrderConfirmation, sendStatusUpdate } = require('../utils/orderEmail');
 
 const router = express.Router();
 
@@ -103,6 +104,8 @@ router.post('/create', shippingValidators, async (req, res) => {
 
   await Cart.findOneAndUpdate({ user: req.user._id }, { items: [] });
 
+  sendOrderConfirmation(order, req.user.email, req.user.name);
+
   return res.status(201).json({ mode: 'cod', orderId: order._id });
 });
 
@@ -142,6 +145,8 @@ router.post('/verify', async (req, res) => {
 
   await Cart.findOneAndUpdate({ user: req.user._id }, { items: [] });
 
+  sendOrderConfirmation(order, req.user.email, req.user.name);
+
   res.json({ success: true, orderId: order._id });
 });
 
@@ -170,6 +175,11 @@ router.patch('/admin/:id/status', adminOnly, async (req, res) => {
   if (!order) {
     return res.status(404).json({ message: 'Order not found' });
   }
+
+  if (order.user?.email) {
+    sendStatusUpdate(order, order.user.email, order.user.name, status);
+  }
+
   res.json({ order });
 });
 
