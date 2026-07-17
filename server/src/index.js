@@ -11,12 +11,26 @@ const uploadRoutes = require('./routes/upload');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
-const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+
+// CLIENT_URL can hold one or more comma-separated origins (prod + local)
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+if (!allowedOrigins.includes('http://localhost:5173')) {
+  allowedOrigins.push('http://localhost:5173');
+}
 
 app.use(helmet());
 app.use(
   cors({
-    origin: [clientUrl, 'http://localhost:5173'],
+    origin(origin, callback) {
+      // Allow non-browser tools (curl, health checks) that send no origin
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   })
 );
