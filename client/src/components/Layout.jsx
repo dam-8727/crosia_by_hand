@@ -26,6 +26,7 @@ export default function Layout() {
                 Cart{cart.count > 0 && <span className="cart-badge">{cart.count}</span>}
               </Link>
               <Link to="/orders">Orders</Link>
+              {user.role === 'admin' && <Link to="/admin">Admin</Link>}
               <span className="nav-hi">Hi, {user.name.split(' ')[0]}</span>
               <button type="button" className="linkish" onClick={logout}>
                 Log out

@@ -70,4 +70,33 @@ export const api = {
     request('/api/orders/verify', { method: 'POST', body: JSON.stringify(body) }),
   getOrders: () => request('/api/orders'),
   getOrder: (id) => request(`/api/orders/${id}`),
+
+  // admin
+  createProduct: (body) =>
+    request('/api/products', { method: 'POST', body: JSON.stringify(body) }),
+  updateProduct: (id, body) =>
+    request(`/api/products/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  deleteProduct: (id) =>
+    request(`/api/products/${id}`, { method: 'DELETE' }),
+  getAllOrders: () => request('/api/orders/admin/all'),
+  updateOrderStatus: (id, status) =>
+    request(`/api/orders/admin/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const token = localStorage.getItem(TOKEN_KEY);
+    const res = await fetch(`${API_URL}/api/upload`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.message || 'Upload failed');
+    }
+    return data;
+  },
 };

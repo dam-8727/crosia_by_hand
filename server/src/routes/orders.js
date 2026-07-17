@@ -4,7 +4,7 @@ const { body, validationResult } = require('express-validator');
 const Razorpay = require('razorpay');
 const Cart = require('../models/Cart');
 const Order = require('../models/Order');
-const { protect } = require('../middleware/auth');
+const { protect, adminOnly } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -143,6 +143,34 @@ router.post('/verify', async (req, res) => {
   await Cart.findOneAndUpdate({ user: req.user._id }, { items: [] });
 
   res.json({ success: true, orderId: order._id });
+});
+
+// ---- Admin-only routes ----
+
+// GET /api/orders/admin/all  -> every order (admin)
+router.get('/admin/all', adminOnly, async (req, res) => {
+  const orders = await Order.find()
+    .populate('user', 'name email')
+    .sort({ createdAt: -1 });
+  res.json({ orders });
+});
+
+// PATCH /api/orders/admin/:id/status  -> update fulfillment status (admin)
+router.patch('/admin/:id/status', adminOnly, async (req, res) => {
+  const allowed = ['paid', 'shipped', 'delivered', 'cod_pending', 'failed'];
+  const { status } = req.body;
+  if (!allowed.includes(status)) {
+    return res.status(400).json({ message: 'Invalid status' });
+  }
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    { status },
+    { new: true }
+  ).populate('user', 'name email');
+  if (!order) {
+    return res.status(404).json({ message: 'Order not found' });
+  }
+  res.json({ order });
 });
 
 // GET /api/orders  -> current user's order history
