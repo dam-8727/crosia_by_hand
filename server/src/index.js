@@ -8,6 +8,7 @@ const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/orders');
 const uploadRoutes = require('./routes/upload');
+const webhookRoutes = require('./routes/webhooks');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -34,6 +35,9 @@ app.use(
     credentials: true,
   })
 );
+// Razorpay webhooks need the raw body for signature verification
+app.use('/api/webhooks', express.raw({ type: 'application/json' }), webhookRoutes);
+
 app.use(express.json({ limit: '1mb' }));
 
 app.get('/', (_req, res) => {

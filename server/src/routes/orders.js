@@ -6,6 +6,7 @@ const Cart = require('../models/Cart');
 const Order = require('../models/Order');
 const { protect, adminOnly } = require('../middleware/auth');
 const { sendOrderConfirmation, sendStatusUpdate } = require('../utils/orderEmail');
+const { fulfillRazorpayPayment, failRazorpayPayment } = require('../utils/razorpayOrder');
 
 const router = express.Router();
 
@@ -126,28 +127,24 @@ router.post('/verify', async (req, res) => {
     .digest('hex');
 
   if (expected !== razorpay_signature) {
-    await Order.findOneAndUpdate(
-      { razorpayOrderId: razorpay_order_id, user: req.user._id },
-      { status: 'failed' }
-    );
+    await failRazorpayPayment({
+      razorpayOrderId: razorpay_order_id,
+      userId: req.user._id,
+    });
     return res.status(400).json({ message: 'Payment verification failed' });
   }
 
-  const order = await Order.findOneAndUpdate(
-    { razorpayOrderId: razorpay_order_id, user: req.user._id },
-    { status: 'paid', razorpayPaymentId: razorpay_payment_id },
-    { new: true }
-  );
+  const result = await fulfillRazorpayPayment({
+    razorpayOrderId: razorpay_order_id,
+    razorpayPaymentId: razorpay_payment_id,
+    userId: req.user._id,
+  });
 
-  if (!order) {
-    return res.status(404).json({ message: 'Order not found' });
+  if (!result.ok) {
+    return res.status(result.status).json({ message: result.message });
   }
 
-  await Cart.findOneAndUpdate({ user: req.user._id }, { items: [] });
-
-  sendOrderConfirmation(order, req.user.email, req.user.name);
-
-  res.json({ success: true, orderId: order._id });
+  res.json({ success: true, orderId: result.order._id });
 });
 
 // ---- Admin-only routes ----

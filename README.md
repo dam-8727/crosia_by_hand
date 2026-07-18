@@ -248,6 +248,7 @@ Log in again to access `/admin/products` and `/admin/orders`.
 | `NODE_ENV` | No | `development` or `production` |
 | `RAZORPAY_KEY_ID` | No | Razorpay key — if both Razorpay vars are set, online checkout is enabled |
 | `RAZORPAY_KEY_SECRET` | No | Razorpay secret |
+| `RAZORPAY_WEBHOOK_SECRET` | No | Razorpay webhook secret — enables `POST /api/webhooks/razorpay` backup confirmation |
 | `CLOUDINARY_CLOUD_NAME` | No | All three Cloudinary vars enable admin image upload |
 | `CLOUDINARY_API_KEY` | No | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | No | Cloudinary API secret |
@@ -336,6 +337,12 @@ Rate limit: 30 requests per 15 minutes.
 | GET | `/config` | `{ razorpayEnabled, keyId }` |
 | POST | `/create` | Create order from cart `{ shipping }` |
 | POST | `/verify` | Verify Razorpay payment signature |
+
+### Webhooks — `/api/webhooks`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/razorpay` | Razorpay server-to-server events (`payment.captured`, `payment.failed`) |
 | GET | `/` | User's orders |
 | GET | `/:id` | Single order (own orders only) |
 | GET | `/admin/all` | Admin: all orders |
@@ -381,6 +388,7 @@ Rate limit: 30 requests per 15 minutes.
    - Creates a Razorpay order and a pending Order (`status: created`).
    - Opens the Razorpay checkout modal.
    - On success → `POST /api/orders/verify` → `status: paid`, cart cleared.
+   - **Backup:** Razorpay can also call `POST /api/webhooks/razorpay` if the browser never reaches `/verify`.
 4. **If Razorpay is not configured:**
    - Creates a COD order (`status: cod_pending`), cart cleared immediately.
 5. Customer is redirected to `/order-success/:id`.
