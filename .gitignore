@@ -14,6 +14,7 @@ client/node_modules/
 
 # AI / local notes — not for repository
 memory.md
+docs/PROJECT_REPORT.md
 
 # Original product photos — local only (not published to GitHub)
 client/public/products/*
