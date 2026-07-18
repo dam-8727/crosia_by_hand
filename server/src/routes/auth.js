@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
+const { sendPasswordReset } = require('../utils/authEmail');
 
 const router = express.Router();
 
@@ -93,8 +94,10 @@ function hashToken(token) {
 }
 
 // POST /api/auth/forgot  { email }
-// Demo mode: no email service, so we return the reset token/link in the response.
-// In production this token would be emailed to the user instead.
+// When email is configured, the reset link is sent to the registered address only.
+// Demo fallback: if no email service is configured, the link is returned in the response.
+const RESET_EXPIRY_MINUTES = 15;
+
 router.post(
   '/forgot',
   authLimiter,
@@ -111,13 +114,13 @@ router.post(
     // Always respond success to avoid leaking which emails exist.
     if (!user) {
       return res.json({
-        message: 'If that email exists, a reset link has been generated.',
+        message: 'If that email is registered, a reset link has been sent to it.',
       });
     }
 
     const rawToken = crypto.randomBytes(32).toString('hex');
     user.resetTokenHash = hashToken(rawToken);
-    user.resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+    user.resetTokenExpiry = new Date(Date.now() + RESET_EXPIRY_MINUTES * 60 * 1000);
     await user.save();
 
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
@@ -125,11 +128,25 @@ router.post(
       user.email
     )}`;
 
+    const emailSent = await sendPasswordReset(
+      user.email,
+      user.name,
+      resetLink,
+      RESET_EXPIRY_MINUTES
+    );
+
+    if (emailSent) {
+      return res.json({
+        message: 'If that email is registered, a reset link has been sent to it.',
+      });
+    }
+
+    // Demo fallback: email service not configured, return the link so the flow still works.
     return res.json({
-      message: 'Reset link generated. (Demo mode: link shown below instead of email.)',
+      message: 'Reset link generated. (Demo mode: email is not configured, link shown below.)',
       demo: true,
       resetLink,
-      expiresInMinutes: 15,
+      expiresInMinutes: RESET_EXPIRY_MINUTES,
     });
   }
 );

@@ -30,7 +30,7 @@ export default function ForgotPassword() {
   return (
     <div className="auth-card">
       <h1>Forgot password</h1>
-      <p className="sub">Enter your email to get a reset link</p>
+      <p className="sub">Enter your email and we'll send a reset link to it</p>
       <form onSubmit={onSubmit}>
         {error && <p className="form-error">{error}</p>}
         {message && <p className="form-success">{message}</p>}
