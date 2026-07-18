@@ -5,27 +5,36 @@ import { api } from '../api';
 import ProductCard from '../components/ProductCard';
 import './Home.css';
 
-const CATEGORY_TILES = [
-  { name: 'Decor', image: '/products/wall_hanging_1.png' },
-  { name: 'Storage', image: '/products/basket_2.png' },
-  { name: 'Living', image: '/products/sunflower_cushion_cover.jpg' },
-  { name: 'Wear & Carry', image: '/products/purse_2.png' },
-];
+const CATEGORIES = ['Decor', 'Storage', 'Living', 'Wear & Carry'];
 
 export default function Home() {
   const { user } = useAuth();
   const location = useLocation();
   const justRegistered = Boolean(location.state?.justRegistered);
   const [featured, setFeatured] = useState([]);
+  const [categoryTiles, setCategoryTiles] = useState(
+    CATEGORIES.map((name) => ({ name, image: null }))
+  );
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       try {
         const data = await api.getProducts();
-        if (!cancelled) setFeatured((data.products || []).slice(0, 4));
+        const products = data.products || [];
+        if (cancelled) return;
+        setFeatured(products.slice(0, 4));
+        setCategoryTiles(
+          CATEGORIES.map((name) => ({
+            name,
+            image: products.find((p) => p.category === name)?.imageUrl ?? null,
+          }))
+        );
       } catch {
-        if (!cancelled) setFeatured([]);
+        if (!cancelled) {
+          setFeatured([]);
+          setCategoryTiles(CATEGORIES.map((name) => ({ name, image: null })));
+        }
       }
     }
     load();
@@ -62,13 +71,17 @@ export default function Home() {
       <section className="home-section">
         <h2 className="section-title">Shop by category</h2>
         <div className="category-tiles">
-          {CATEGORY_TILES.map((c) => (
+          {categoryTiles.map((c) => (
             <Link
               key={c.name}
               to={`/shop?category=${encodeURIComponent(c.name)}`}
               className="category-tile"
             >
-              <img src={c.image} alt={c.name} loading="lazy" />
+              {c.image ? (
+                <img src={c.image} alt={c.name} loading="lazy" />
+              ) : (
+                <div className="category-tile-placeholder" aria-hidden="true" />
+              )}
               <span className="category-tile-label">{c.name}</span>
             </Link>
           ))}
