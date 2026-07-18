@@ -36,6 +36,18 @@
   color: var(--color-primary);
 }
 
+.detail-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
+
+.detail-rating-text {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
 .detail-price {
   font-size: 1.5rem;
   font-weight: 700;

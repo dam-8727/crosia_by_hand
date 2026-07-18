@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import StarRating from './StarRating';
 import './ProductCard.css';
 
 export default function ProductCard({ product }) {
@@ -41,6 +42,14 @@ export default function ProductCard({ product }) {
         <Link to={`/product/${product.slug}`} className="product-name">
           {product.name}
         </Link>
+        {product.numReviews > 0 ? (
+          <div className="product-rating">
+            <StarRating value={product.rating} size="sm" />
+            <span className="rating-count">({product.numReviews})</span>
+          </div>
+        ) : (
+          <div className="product-rating product-rating-empty">No reviews yet</div>
+        )}
         <div className="product-row">
           <span className="product-price">₹{product.price}</span>
           <button

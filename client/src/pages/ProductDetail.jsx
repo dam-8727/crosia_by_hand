@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import StarRating from '../components/StarRating';
+import ProductReviews from '../components/ProductReviews';
 import './ProductDetail.css';
 
 export default function ProductDetail() {
@@ -36,6 +38,16 @@ export default function ProductDetail() {
     };
   }, [slug]);
 
+  // Refresh only the product (used to update the rating summary after a review change)
+  async function refreshProduct() {
+    try {
+      const data = await api.getProduct(slug);
+      setProduct(data.product);
+    } catch {
+      /* ignore — the reviews list is already up to date */
+    }
+  }
+
   async function onAdd() {
     if (!user) {
       navigate('/login');
@@ -67,6 +79,15 @@ export default function ProductDetail() {
         <Link to="/shop" className="back-link">← Back to shop</Link>
         <span className="product-cat">{product.category}</span>
         <h1>{product.name}</h1>
+        {product.numReviews > 0 && (
+          <div className="detail-rating">
+            <StarRating value={product.rating} size="md" />
+            <span className="detail-rating-text">
+              {product.rating.toFixed(1)} · {product.numReviews} review
+              {product.numReviews > 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
         <p className="detail-price">₹{product.price}</p>
 
         {outOfStock ? (
@@ -105,6 +126,8 @@ export default function ProductDetail() {
           </p>
         )}
       </div>
+
+      <ProductReviews slug={slug} onRatingChange={refreshProduct} />
     </section>
   );
 }

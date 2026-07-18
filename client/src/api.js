@@ -53,6 +53,16 @@ export const api = {
   },
   getProduct: (slug) => request(`/api/products/${slug}`),
 
+  // reviews
+  getReviews: (slug) => request(`/api/products/${slug}/reviews`),
+  addReview: (slug, body) =>
+    request(`/api/products/${slug}/reviews`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  deleteReview: (slug) =>
+    request(`/api/products/${slug}/reviews`, { method: 'DELETE' }),
+
   // cart
   getCart: () => request('/api/cart'),
   addToCart: (productId, qty = 1) =>

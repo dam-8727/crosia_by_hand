@@ -72,6 +72,23 @@
   color: var(--color-primary);
 }
 
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.1rem;
+}
+
+.rating-count {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.product-rating-empty {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
 .product-row {
   display: flex;
   align-items: center;

@@ -13,6 +13,8 @@ const productSchema = new mongoose.Schema(
     material: { type: String, default: 'Handmade crochet' },
     stock: { type: Number, default: 10, min: 0 },
     imageUrl: { type: String, required: true },
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+    numReviews: { type: Number, default: 0, min: 0 },
   },
   { timestamps: true }
 );

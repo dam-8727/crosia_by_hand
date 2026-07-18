@@ -1,9 +1,22 @@
 const express = require('express');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 const Product = require('../models/Product');
+const Review = require('../models/Review');
+const Order = require('../models/Order');
 const { protect, adminOnly } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Limit review writes per user (falls back to IP if somehow unauthenticated).
+const reviewLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?._id?.toString() || ipKeyGenerator(req.ip),
+  message: { message: 'Too many review submissions. Please try again later.' },
+});
 
 function slugify(text) {
   return String(text)
@@ -47,6 +60,86 @@ router.get('/:slug', async (req, res) => {
     return res.status(404).json({ message: 'Product not found' });
   }
   res.json({ product });
+});
+
+// ---- Reviews ----
+
+// GET /api/products/:slug/reviews  -> all reviews for a product (newest first)
+router.get('/:slug/reviews', async (req, res) => {
+  const product = await Product.findOne({ slug: req.params.slug }).select('_id');
+  if (!product) {
+    return res.status(404).json({ message: 'Product not found' });
+  }
+  const reviews = await Review.find({ product: product._id }).sort({ createdAt: -1 });
+  res.json({ reviews });
+});
+
+// POST /api/products/:slug/reviews  -> add or update the logged-in user's review
+router.post(
+  '/:slug/reviews',
+  protect,
+  reviewLimiter,
+  [
+    body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
+    body('comment').optional().trim().isLength({ max: 1000 }).withMessage('Comment too long'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg });
+    }
+
+    const product = await Product.findOne({ slug: req.params.slug }).select('_id');
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const { rating, comment } = req.body;
+
+    // Mark as a verified purchase if the user has an order containing this product.
+    const purchased = await Order.exists({
+      user: req.user._id,
+      'items.product': product._id,
+      status: { $in: ['paid', 'shipped', 'delivered', 'cod_pending'] },
+    });
+
+    const review = await Review.findOneAndUpdate(
+      { product: product._id, user: req.user._id },
+      {
+        product: product._id,
+        user: req.user._id,
+        name: req.user.name,
+        rating,
+        comment: comment || '',
+        verified: Boolean(purchased),
+      },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+
+    await Review.recalcProduct(product._id);
+
+    res.status(201).json({ review });
+  }
+);
+
+// DELETE /api/products/:slug/reviews  -> remove the logged-in user's own review
+router.delete('/:slug/reviews', protect, reviewLimiter, async (req, res) => {
+  const product = await Product.findOne({ slug: req.params.slug }).select('_id');
+  if (!product) {
+    return res.status(404).json({ message: 'Product not found' });
+  }
+
+  const deleted = await Review.findOneAndDelete({
+    product: product._id,
+    user: req.user._id,
+  });
+  if (!deleted) {
+    return res.status(404).json({ message: 'Review not found' });
+  }
+
+  await Review.recalcProduct(product._id);
+
+  res.json({ message: 'Review deleted' });
 });
 
 // ---- Admin-only routes below ----

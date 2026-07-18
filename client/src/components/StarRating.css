@@ -1,0 +1,40 @@
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+}
+
+.star-rating .star {
+  color: #d9cbb8;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+  transition: color 0.12s ease, transform 0.12s ease;
+}
+
+.star-rating .star.filled {
+  color: #e6a817;
+}
+
+.star-interactive .star {
+  cursor: pointer;
+  font-size: inherit;
+}
+
+.star-interactive .star:hover {
+  transform: scale(1.15);
+}
+
+.star-sm {
+  font-size: 0.9rem;
+}
+
+.star-md {
+  font-size: 1.15rem;
+}
+
+.star-lg {
+  font-size: 1.6rem;
+}
