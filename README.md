@@ -454,6 +454,56 @@ Local development CORS is always allowed for `http://localhost:5173`.
 
 ---
 
+## Git & GitHub
+
+### What to commit
+
+- Application code (`client/`, `server/`)
+- `README.md`, `docs/`, `netlify.toml`, `.env.example` files
+- Brand assets (`client/public/hero-banner.png`, logo, favicon)
+
+### Do not commit
+
+- `client/.env` and `server/.env` (secrets and database credentials)
+- `memory.md` (local AI notes)
+- Product photos in `client/public/products/` (gitignored — original handmade work)
+
+### Push changes
+
+```bash
+git add .
+git status   # confirm .env and product photos are not listed
+git commit -m "Your message here"
+git push origin main
+```
+
+### Fix: push rejected (non-fast-forward)
+
+If `git push` fails with:
+
+```text
+! [rejected] main -> main (non-fast-forward)
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart.
+```
+
+GitHub has commits that your laptop does not have yet (e.g. you pushed from another machine, or the remote was updated). **Do not force-push.** Run:
+
+```bash
+git pull --rebase origin main
+git push origin main
+```
+
+`git pull --rebase` downloads remote changes and replays your local commits on top. If there are merge conflicts, Git will pause — fix the files, then:
+
+```bash
+git add <fixed-files>
+git rebase --continue
+git push origin main
+```
+
+---
+
 ## NPM Scripts
 
 ### Server (`server/`)
